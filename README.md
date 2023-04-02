@@ -1,5 +1,5 @@
 <b><ins> Ανάκτηση πληροφορίας
-1η φάση εργασίας</ins></b>
+1η φάση εργασίας</ins></b>                                              
 
 <i>Συλλογή εγγράφων:</i>
 
@@ -17,3 +17,5 @@
 
 <ins>Μερικά από τα έγγραφα της συλλογής:</ins>
 [Preview.csv](https://github.com/Nik-Pt/InformationRetrievalProject/files/11132248/Preview.csv)
+  
+  <b><i>Πήττας Νίκος, ΑΜ:5007</b></i>
