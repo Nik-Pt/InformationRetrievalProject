@@ -1,5 +1,8 @@
 package SearchEngine.InformationRetreival;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -27,12 +30,12 @@ public class SearchGUI extends JFrame {
         mainPanel = new JPanel(new BorderLayout());
         searchPanel = new JPanel(new FlowLayout());
         resultsPanel = new JPanel(new BorderLayout());
-        searchField = new JTextField(20);
+        searchField = new JTextField(15);
         fields = new JComboBox<String>(new String[]{"artist", "title", "album", "date", "lyrics", "year"});
         searchButton = new JButton("Search");
         loadMoreButton = new JButton("Load More");
         historyButton = new JButton("Search History");
-        resultsArea = new JTextArea(35, 20);
+        resultsArea = new JTextArea(32, 10);
         scrollPane = new JScrollPane(resultsArea);
 
         searchPanel.add(new JLabel("Search for:"));
@@ -52,7 +55,7 @@ public class SearchGUI extends JFrame {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String searchTerm = searchField.getText() + "*";
+                String searchTerm = searchField.getText();
                 String selectedField = (String) fields.getSelectedItem();
                 String[] fields = selectedField.split(",");
                 try {
@@ -61,7 +64,7 @@ public class SearchGUI extends JFrame {
                     resultsIndex = 0;
                     displayResults();
                     searchHistory.add(searchTerm);
-                } catch (IOException | ParseException exception) {
+                } catch (IOException | ParseException | BadLocationException exception) {
                     exception.printStackTrace();
                 }
             }
@@ -71,7 +74,11 @@ public class SearchGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 resultsIndex += resultsPerPage;
-                displayResults();
+                try {
+                    displayResults();
+                } catch (BadLocationException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -93,7 +100,7 @@ public class SearchGUI extends JFrame {
         setVisible(true);
     }
 
-    public void displayResults(){
+    public void displayResults() throws BadLocationException {
         resultsArea.setText("");
         for(int i = resultsIndex; i < Math.min(resultsIndex + resultsPerPage , results.size()); i++) {
             Document doc = results.get(i);
@@ -109,6 +116,14 @@ public class SearchGUI extends JFrame {
                 snippetEnd = field.length();
             }
             String snippet = field.substring(snippetStart, snippetEnd);
+            Highlighter highlighter = resultsArea.getHighlighter();
+            Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
+            int p0 = snippet.toLowerCase().indexOf(searchTerm);
+            while (p0 >= 0) {
+                int p1 = p0 + searchTerm.length();
+                highlighter.addHighlight(snippetStart + p0, snippetStart + p1, painter);
+                p0 = snippet.toLowerCase().indexOf(searchTerm, p1);
+            }
             resultsArea.append(doc.get("title") + " - " + doc.get("artist") + " - " + doc.get("year") + " - " + doc.get("date") +"\n" + "  ..." + snippet + "..." + "\n\n");
         }
         if(resultsIndex + resultsPerPage < results.size()){
