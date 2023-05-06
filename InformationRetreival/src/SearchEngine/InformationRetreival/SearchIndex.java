@@ -63,7 +63,7 @@ public class SearchIndex {
 
         //Querying the index and begin the search in all the fields above
         QueryParser parser = new MultiFieldQueryParser(fields,analyzer);
-        Query searchQuery = parser.parse(query+"*");
+        Query searchQuery = parser.parse(query);
         TopDocs results = searcher.search(searchQuery,1000000000);
         ScoreDoc[] hits = results.scoreDocs;
 

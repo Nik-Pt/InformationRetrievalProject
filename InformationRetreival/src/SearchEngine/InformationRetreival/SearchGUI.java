@@ -1,5 +1,8 @@
 package SearchEngine.InformationRetreival;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -95,11 +98,12 @@ public class SearchGUI extends JFrame {
 
     public void displayResults(){
         resultsArea.setText("");
+        Highlighter highlighter = resultsArea.getHighlighter();
         for(int i = resultsIndex; i < Math.min(resultsIndex + resultsPerPage , results.size()); i++) {
             Document doc = results.get(i);
             String selectedField = (String) fields.getSelectedItem();
             String field = doc.get(selectedField);
-            String searchTerm = searchField.getText();
+            String searchTerm = searchField.getText().toLowerCase();
             int snippetStart = field.toLowerCase().indexOf(searchTerm) - 30;
             if (snippetStart < 0) {
                 snippetStart = 0;
@@ -110,6 +114,16 @@ public class SearchGUI extends JFrame {
             }
             String snippet = field.substring(snippetStart, snippetEnd);
             resultsArea.append(doc.get("title") + " - " + doc.get("artist") + " - " + doc.get("year") + " - " + doc.get("date") +"\n" + "  ..." + snippet + "..." + "\n\n");
+            String text = resultsArea.getText();
+            int index = text.indexOf(searchTerm);
+            while(index >= 0){
+                try{
+                    highlighter.addHighlight(index,index + searchTerm.length(), DefaultHighlighter.DefaultPainter);
+                    index = text.indexOf(searchTerm,index + searchTerm.length());
+                }catch (BadLocationException ex){
+                    ex.printStackTrace();
+                }
+            }
         }
         if(resultsIndex + resultsPerPage < results.size()){
             loadMoreButton.setEnabled(true);
