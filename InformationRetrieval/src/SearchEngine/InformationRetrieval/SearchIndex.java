@@ -38,7 +38,7 @@ public class SearchIndex {
         //Create the index
         String indexPath = "index";
         Directory indexDir = FSDirectory.open(Paths.get(indexPath));
-        Analyzer analyzer = new StopAnalyzer(new File("stopwords.txt").toPath());
+        Analyzer analyzer = new StandardAnalyzer();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         boolean indexExists = DirectoryReader.indexExists(indexDir);
 
@@ -69,7 +69,7 @@ public class SearchIndex {
 
         //Querying the index and begin the search in all the fields above
         QueryParser parser = new MultiFieldQueryParser(fields,analyzer);
-        Query searchQuery = parser.parse(query);
+        Query searchQuery = parser.parse(query+"*");
         TopDocs results = searcher.search(searchQuery,1000000000);
         ScoreDoc[] hits = results.scoreDocs;
 
