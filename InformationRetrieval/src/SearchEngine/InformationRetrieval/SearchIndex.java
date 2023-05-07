@@ -1,19 +1,11 @@
 package SearchEngine.InformationRetrieval;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.*;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.CharArraySet;
-import org.apache.lucene.analysis.TokenFilter;
-import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.core.StopAnalyzer;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.en.PorterStemFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -31,11 +23,19 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+/*  SearchIndex class is responsible for the search and retrieval of a word,number or phrase that the user wants to find in the .csv files.
+    This class contains one method(could have made one for the index creation and one for the search) that creates a folder named index.
+    We check if the folder already exist and if so then it is deleted to prevent duplicate results when searching for something.
+    A new ReadCSV object is created and then the method toSongList is called in order to read all the data from the .csv files.
+    Then the song is saved in a Document so that Lucene can begin the search.
+    A MultiQueryParser is being used because the search can be done in all the fields using the StandardAnalyzer(I wanted to use the Snowball analyzer,but it is not included this version of Lucene).
+    During the for loop when the word,number,phrase is found in a Document then it is saved in a List<Document> so that it can be displayed later on.
+*/
+
 public class SearchIndex {
 
     public List<Document> search(String query, String[] fields) throws IOException, ParseException {
 
-        //Create the index
         String indexPath = "index";
         Directory indexDir = FSDirectory.open(Paths.get(indexPath));
         Analyzer analyzer = new StandardAnalyzer();
@@ -48,7 +48,6 @@ public class SearchIndex {
 
         IndexWriter writer = new IndexWriter(indexDir,config);
 
-        //Read data from CSV using ReadCSV and add them to the index
         ReadCSV reader = new ReadCSV();
         ArrayList<Song> songList = reader.toSongList();
         for(Song song : songList){
@@ -63,7 +62,6 @@ public class SearchIndex {
         }
         writer.close();
 
-        //Search the index
         DirectoryReader dirReader = DirectoryReader.open(FSDirectory.open(Paths.get(indexPath)));
         IndexSearcher searcher = new IndexSearcher((dirReader));
 

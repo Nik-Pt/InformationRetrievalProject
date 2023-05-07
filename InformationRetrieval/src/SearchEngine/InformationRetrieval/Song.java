@@ -1,5 +1,6 @@
 package SearchEngine.InformationRetrieval;
 
+//Created a Song Class so that each and every song in the .csv files will be saved as a Song object in which I have access to all it's data
 public class Song {
     private String artist;
     private String title;

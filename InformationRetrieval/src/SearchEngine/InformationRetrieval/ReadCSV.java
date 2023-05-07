@@ -3,6 +3,11 @@ package  SearchEngine.InformationRetrieval;
 import java.io.*;
 import java.util.*;
 
+/* ReadCSV class contains the path of the .csv files.
+   The method toSongList() creates a new ArrayList that can store Song objects. Specifically it checks if the file or directory is valid and then using a BufferedReader reads each line except
+   the first one and saves it as a Song object in the ArrayList
+*/
+
 public class ReadCSV{
 
     private String folderPath = "csv";
@@ -27,13 +32,13 @@ public class ReadCSV{
                     String line;
                     csvReader.readLine(); //Skips the first line because of the header in each .csv file
                     while((line = csvReader.readLine()) != null){
-                        String[] data = line.split(",");
-                        String artist = data[1];
-                        String title = data[2];
-                        String album = data[3];
-                        String year = data[4];
-                        String date = data[5];
-                        String lyrics = data[6];
+                        String[] songdata = line.split(",");
+                        String artist = songdata[1];
+                        String title = songdata[2];
+                        String album = songdata[3];
+                        String year = songdata[4];
+                        String date = songdata[5];
+                        String lyrics = songdata[6];
                         Song song = new Song(artist,title,album,date,lyrics,year);
                         songList.add(song);
                     }

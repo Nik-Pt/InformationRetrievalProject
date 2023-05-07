@@ -1,4 +1,5 @@
 package SearchEngine.InformationRetrieval;
+
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
@@ -10,6 +11,21 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
+
+/*  SearchGUI class is responsible for creating the UI and getting the users input and selection of fields he wants for the search.
+    The user enters the term he wants to search for in the .csv files and then the system after creating a SearchIndex object uses the search method to begin the search.
+    Then after the search is complete the results are saved and displayed in the resultsArea 10 at a time along with a string in which the term appeared in the .csv files
+    To make obvious where in this string the term was found I used a highlighter that specifically highlights the term.
+    By pressing the Load More button the user can view 10 more results each time.
+    Finally by pressing the Search History button the user can see previous searches that have been made(They are not available after closing the program).
+
+    Note : I gave the user only the option of searching in these fields {"artist", "title", "album", "date", "lyrics", "year"} separately only because if the user enters for example "eminem 2016"
+           then the program will report an error with 2016 in this line "int snippetStart = field.toLowerCase().indexOf(searchTerm) - 30;".
+           If I fix it then the user will be able to search in any field but until then I will keep it as it is.
+
+    Issues: 1)If the user enters a phrase that does not appear in any of the .csv files but the words appear separately then nothing will be highlighted.
+            2)If the user enters a word,phrase using characters like [,],{,\,},?...ect then the program will report an error.
+*/
 
 public class SearchGUI extends JFrame {
     private JPanel mainPanel;
@@ -115,13 +131,16 @@ public class SearchGUI extends JFrame {
             String snippet = field.substring(snippetStart, snippetEnd);
             resultsArea.append(doc.get("title") + " - " + doc.get("artist") + " - " + doc.get("year") + " - " + doc.get("date") +"\n" + "  ..." + snippet + "..." + "\n\n");
             String text = resultsArea.getText();
-            int index = text.indexOf(searchTerm);
-            while(index >= 0){
-                try{
-                    highlighter.addHighlight(index,index + searchTerm.length(), DefaultHighlighter.DefaultPainter);
-                    index = text.indexOf(searchTerm,index + searchTerm.length());
-                }catch (BadLocationException ex){
-                    ex.printStackTrace();
+            int index = 0;
+            while (index >= 0) {
+                index = text.toLowerCase().indexOf(searchTerm, index);
+                if (index >= 0) {
+                    try {
+                        highlighter.addHighlight(index, index + searchTerm.length(), DefaultHighlighter.DefaultPainter);
+                        index += searchTerm.length();
+                    } catch (BadLocationException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         }
