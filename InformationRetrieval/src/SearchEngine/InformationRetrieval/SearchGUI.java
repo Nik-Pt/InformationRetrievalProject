@@ -33,7 +33,7 @@ public class SearchGUI extends JFrame {
     private JPanel resultsPanel;
     private JTextField searchField;
     private JComboBox<String> fields;
-    private JButton searchButton , loadMoreButton,historyButton;
+    private JButton searchButton , loadMoreButton,historyButton,sortButton;
     private JTextArea resultsArea;
     private JScrollPane scrollPane;
     private List<Document> results;
@@ -51,6 +51,7 @@ public class SearchGUI extends JFrame {
         searchButton = new JButton("Search");
         loadMoreButton = new JButton("Load More");
         historyButton = new JButton("Search History");
+        sortButton = new JButton("Sort by artist");
         resultsArea = new JTextArea(35, 20);
         scrollPane = new JScrollPane(resultsArea);
 
@@ -60,6 +61,7 @@ public class SearchGUI extends JFrame {
         searchPanel.add(fields);
         searchPanel.add(searchButton);
         searchPanel.add(historyButton);
+        searchPanel.add(sortButton);
 
         resultsPanel.add(scrollPane, BorderLayout.CENTER);
         resultsPanel.add(loadMoreButton, BorderLayout.SOUTH);
@@ -102,6 +104,22 @@ public class SearchGUI extends JFrame {
                 for (String searchTerm : searchHistory){
                     resultsArea.append(searchTerm + "\n");
                 }
+            }
+        });
+
+        // Add action listener for the sort button
+        sortButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Sort the results alphabetically by artist name
+                results.sort((a, b) -> {
+                    String artistA = a.get("artist").toLowerCase();
+                    String artistB = b.get("artist").toLowerCase();
+                    return artistA.compareTo(artistB);
+                });
+                // Display the sorted results
+                resultsIndex = 0;
+                displayResults();
             }
         });
 

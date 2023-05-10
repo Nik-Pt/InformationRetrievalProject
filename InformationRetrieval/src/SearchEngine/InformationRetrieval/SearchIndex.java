@@ -16,10 +16,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -65,9 +62,16 @@ public class SearchIndex {
         DirectoryReader dirReader = DirectoryReader.open(FSDirectory.open(Paths.get(indexPath)));
         IndexSearcher searcher = new IndexSearcher((dirReader));
 
-        //Querying the index and begin the search in all the fields above
-        QueryParser parser = new MultiFieldQueryParser(fields,analyzer);
-        Query searchQuery = parser.parse(query+"*");
+        QueryParser exactParser = new MultiFieldQueryParser(fields, analyzer);
+        QueryParser wildcardParser = new MultiFieldQueryParser(fields, analyzer);
+        wildcardParser.setAllowLeadingWildcard(true);
+
+        Query exactQuery = exactParser.parse(query + "^2");
+        Query wildcardQuery = wildcardParser.parse(query + "*");
+        BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
+        queryBuilder.add(exactQuery, BooleanClause.Occur.SHOULD);
+        queryBuilder.add(wildcardQuery, BooleanClause.Occur.SHOULD);
+        Query searchQuery = queryBuilder.build();
         TopDocs results = searcher.search(searchQuery,1000000000);
         ScoreDoc[] hits = results.scoreDocs;
 
