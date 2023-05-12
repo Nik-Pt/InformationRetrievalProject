@@ -6,7 +6,12 @@ import java.util.ArrayList;
 import java.util.*;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.en.PorterStemFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
@@ -36,6 +41,16 @@ public class SearchIndex {
         String indexPath = "index";
         Directory indexDir = FSDirectory.open(Paths.get(indexPath));
         Analyzer analyzer = new StandardAnalyzer();
+        analyzer = new Analyzer() {
+            @Override
+            protected TokenStreamComponents createComponents(String s) {
+                Tokenizer tokenizer = new StandardTokenizer();
+                TokenStream tokenStream = new LowerCaseFilter(tokenizer);
+                tokenStream = new PorterStemFilter(tokenStream);
+                return new TokenStreamComponents(tokenizer,tokenStream);
+
+            }
+        };
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         boolean indexExists = DirectoryReader.indexExists(indexDir);
 
