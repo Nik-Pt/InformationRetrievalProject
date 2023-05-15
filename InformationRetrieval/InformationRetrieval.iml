@@ -10,12 +10,13 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/../../../lucene-9.5.0/modules" />
+          <root url="file://$USER_HOME$/lucene-9.5.0/modules" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="file://$MODULE_DIR$/../../../lucene-9.5.0/modules" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/lucene-9.5.0/modules" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" exported="" name="modules" level="project" />
   </component>
 </module>

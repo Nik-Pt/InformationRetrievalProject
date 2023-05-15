@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="modules">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../InformationRetrieval/lucene-9.5.0/modules" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/../../InformationRetrieval/lucene-9.5.0/modules" recursive="false" />
+  </library>
+</component>
